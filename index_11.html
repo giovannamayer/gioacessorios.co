@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gio Acessórios</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --marrom:#887363; --creme:#f0e5d8; --escuro:#392012; --cafe:#4e3220;
+    --rosa:#d1bcbc; --marrom2:#847260; --creme2:#f0e2c7; --dourado:#c8ae8b;
+    --ouro:#b8975a; --ouro-bri:#d4aa6a; --bg:#f7f2eb; --borda:rgba(57,32,18,0.13); --branco:#fdfaf6;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{background:var(--bg);color:var(--cafe);font-family:'DM Sans',sans-serif;font-weight:300;min-height:100vh}
+
+  header{
+    position:sticky;top:0;z-index:100;background:var(--escuro);
+    padding:0 2rem;height:70px;display:flex;align-items:center;justify-content:space-between;
+  }
+  .logo-wrap{display:flex;align-items:center;height:100%}
+  .logo-img{height:48px;width:auto;object-fit:contain;display:block}
+  .logo-text{
+    font-family:'Cormorant Garamond',serif;font-size:17px;font-weight:500;
+    letter-spacing:0.22em;text-transform:uppercase;color:var(--creme2);
+  }
+  .logo-text span{color:var(--ouro)}
+  .header-right{display:flex;align-items:center;gap:1rem}
+  .insta-link{font-size:11px;letter-spacing:0.1em;color:var(--dourado);text-decoration:none;opacity:0.75;transition:opacity 0.2s}
+  .insta-link:hover{opacity:1}
+  .cart-btn{
+    display:flex;align-items:center;gap:8px;padding:8px 20px;border-radius:2px;
+    border:1px solid var(--ouro);background:none;cursor:pointer;
+    font-family:'DM Sans',sans-serif;font-size:11px;letter-spacing:0.1em;
+    color:var(--ouro);transition:all 0.2s;
+  }
+  .cart-btn:hover{background:var(--ouro);color:var(--escuro)}
+  .cart-badge{
+    background:var(--ouro);color:var(--escuro);border-radius:50%;
+    width:18px;height:18px;font-size:10px;font-weight:500;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .cart-btn:hover .cart-badge{background:var(--escuro);color:var(--ouro)}
+
+  .hero{
+    background:var(--escuro);padding:5rem 2rem 4rem;text-align:center;
+    position:relative;overflow:hidden;
+  }
+  .hero::before{
+    content:'';position:absolute;inset:0;
+    background:radial-gradient(ellipse 60% 80% at 50% 100%,rgba(200,174,139,0.12) 0%,transparent 70%);
+    pointer-events:none;
+  }
+  .hero-tag{font-size:10px;letter-spacing:0.3em;text-transform:uppercase;color:var(--ouro);margin-bottom:1.5rem}
+  .hero h1{font-family:'Cormorant Garamond',serif;font-size:clamp(2.5rem,6vw,4.5rem);font-weight:300;line-height:1.1;color:var(--creme);margin-bottom:0.75rem}
+  .hero h1 em{font-style:italic;color:var(--ouro-bri)}
+  .hero p{font-size:13px;color:var(--dourado);letter-spacing:0.1em}
+
+  .filtros{display:flex;gap:0.5rem;flex-wrap:wrap;padding:1.5rem 2rem;border-bottom:1px solid var(--borda);background:var(--branco)}
+  .filtro-btn{
+    padding:6px 20px;border-radius:2px;border:1px solid var(--borda);background:none;cursor:pointer;
+    font-family:'DM Sans',sans-serif;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;
+    color:var(--marrom);transition:all 0.2s;
+  }
+  .filtro-btn:hover,.filtro-btn.ativo{background:var(--cafe);color:var(--creme2);border-color:var(--cafe)}
+
+  .catalogo{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:1px;background:var(--borda)}
+  .produto-card{background:var(--branco);cursor:pointer;overflow:hidden;transition:background 0.2s;animation:fadeUp 0.45s ease both}
+  .produto-card:hover{background:var(--creme)}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+  .produto-img{aspect-ratio:3/4;overflow:hidden;background:var(--creme2);display:flex;align-items:center;justify-content:center;position:relative}
+  .produto-emoji{font-size:80px;user-select:none}
+  .produto-img img{width:100%;height:100%;object-fit:cover;transition:transform 0.5s ease}
+  .produto-card:hover .produto-img img{transform:scale(1.05)}
+  .esgotado-overlay{position:absolute;inset:0;background:rgba(247,242,235,0.78);display:flex;align-items:center;justify-content:center}
+  .esgotado-tag{font-size:10px;letter-spacing:0.18em;text-transform:uppercase;color:var(--marrom);border:1px solid var(--borda);background:var(--branco);padding:6px 18px;border-radius:2px}
+  .produto-info{padding:1.1rem 1.25rem 1.25rem}
+  .produto-nome{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:400;margin-bottom:3px;color:var(--cafe);line-height:1.2}
+  .produto-sub{font-size:12px;color:var(--marrom);margin-bottom:10px;letter-spacing:0.03em}
+  .produto-footer{display:flex;align-items:center;justify-content:space-between}
+  .produto-preco{font-family:'Cormorant Garamond',serif;font-size:17px;font-weight:500;color:var(--cafe)}
+  .produto-estoque{font-size:10px;color:var(--ouro);letter-spacing:0.08em;text-transform:uppercase}
+  .add-btn{width:32px;height:32px;border-radius:2px;border:1px solid var(--borda);background:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:18px;color:var(--cafe);transition:all 0.2s}
+  .add-btn:hover{background:var(--cafe);color:var(--creme2);border-color:var(--cafe)}
+
+  .drawer-overlay{display:none;position:fixed;inset:0;background:rgba(57,32,18,0.45);z-index:200}
+  .drawer-overlay.aberto{display:block}
+  .drawer{position:fixed;top:0;right:-440px;bottom:0;width:min(440px,100vw);background:var(--branco);z-index:201;display:flex;flex-direction:column;transition:right 0.35s cubic-bezier(0.4,0,0.2,1);border-left:1px solid var(--borda)}
+  .drawer.aberto{right:0}
+  .drawer-header{padding:1.25rem 1.5rem;border-bottom:1px solid var(--borda);display:flex;align-items:center;justify-content:space-between;background:var(--escuro)}
+  .drawer-titulo{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:400;letter-spacing:0.08em;color:var(--creme)}
+  .fechar-btn{background:none;border:none;cursor:pointer;font-size:20px;color:var(--dourado);padding:4px}
+  .drawer-itens{flex:1;overflow-y:auto;padding:1rem 1.5rem}
+  .carrinho-vazio{text-align:center;padding:3.5rem 0;color:var(--marrom);font-size:14px}
+  .carrinho-vazio-icon{font-size:44px;margin-bottom:1rem;display:block}
+  .item-carrinho{display:flex;gap:1rem;align-items:flex-start;padding:1rem 0;border-bottom:1px solid var(--borda)}
+  .item-thumb{width:64px;height:80px;border-radius:2px;background:var(--creme2);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:28px;overflow:hidden}
+  .item-thumb img{width:100%;height:100%;object-fit:cover}
+  .item-detalhe{flex:1}
+  .item-nome{font-family:'Cormorant Garamond',serif;font-size:15px;font-weight:400;margin-bottom:4px;color:var(--cafe)}
+  .item-var{font-size:11px;color:var(--marrom);margin-bottom:8px}
+  .item-controles{display:flex;align-items:center;gap:10px}
+  .qty-btn{width:26px;height:26px;border-radius:2px;border:1px solid var(--borda);background:none;cursor:pointer;font-size:15px;color:var(--cafe);display:flex;align-items:center;justify-content:center;transition:all 0.15s}
+  .qty-btn:hover{background:var(--cafe);color:var(--creme2)}
+  .qty-num{font-size:14px;min-width:20px;text-align:center;color:var(--cafe)}
+  .item-preco{font-family:'Cormorant Garamond',serif;font-size:15px;font-weight:500;color:var(--ouro);white-space:nowrap}
+  .drawer-footer{padding:1.25rem 1.5rem;border-top:1px solid var(--borda)}
+  .total-linha{display:flex;justify-content:space-between;margin-bottom:1.25rem;align-items:baseline}
+  .total-label{font-size:11px;color:var(--marrom);letter-spacing:0.12em;text-transform:uppercase}
+  .total-valor{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:500;color:var(--cafe)}
+  .finalizar-btn{width:100%;padding:14px;background:var(--escuro);color:var(--creme2);border:none;border-radius:2px;font-family:'DM Sans',sans-serif;font-size:11px;letter-spacing:0.16em;text-transform:uppercase;cursor:pointer;transition:all 0.25s}
+  .finalizar-btn:hover{background:var(--cafe)}
+  .finalizar-btn:disabled{opacity:0.4;cursor:not-allowed}
+  .loading-txt{font-size:11px;color:var(--marrom);text-align:center;margin-top:8px;letter-spacing:0.06em}
+
+  .modal-overlay{display:none;position:fixed;inset:0;background:rgba(57,32,18,0.55);z-index:300;align-items:flex-end;justify-content:center}
+  .modal-overlay.aberto{display:flex}
+  .modal{background:var(--branco);border-radius:4px 4px 0 0;padding:2rem 1.75rem;width:100%;max-width:500px;animation:slideUp 0.3s ease}
+  @keyframes slideUp{from{transform:translateY(40px);opacity:0}to{transform:translateY(0);opacity:1}}
+  .modal-nome{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:400;margin-bottom:4px;color:var(--cafe)}
+  .modal-preco{font-family:'Cormorant Garamond',serif;font-size:16px;color:var(--ouro);margin-bottom:1.5rem}
+  .var-label{font-size:10px;letter-spacing:0.16em;text-transform:uppercase;color:var(--marrom);margin-bottom:10px}
+  .var-opcoes{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:1.5rem}
+  .var-btn{padding:8px 18px;border:1px solid var(--borda);background:none;border-radius:2px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:12px;letter-spacing:0.06em;color:var(--cafe);transition:all 0.15s}
+  .var-btn:hover,.var-btn.sel{background:var(--cafe);color:var(--creme2);border-color:var(--cafe)}
+  .var-btn.esgotada,.var-btn:disabled{opacity:0.38;cursor:not-allowed;text-decoration:line-through}
+  .modal-add-btn{width:100%;padding:13px;background:var(--escuro);color:var(--creme2);border:none;border-radius:2px;font-family:'DM Sans',sans-serif;font-size:11px;letter-spacing:0.16em;text-transform:uppercase;cursor:pointer;transition:background 0.2s}
+  .modal-add-btn:hover{background:var(--cafe)}
+  .modal-fechar{position:absolute;top:1rem;right:1.25rem;background:none;border:none;font-size:20px;color:var(--marrom);cursor:pointer}
+
+  footer{background:var(--escuro);padding:3rem 2rem;text-align:center;margin-top:2px}
+  .footer-logo-wrap{margin:0 auto 1rem;display:flex;align-items:center;justify-content:center;min-height:44px}
+  .footer-logo-img{height:40px;width:auto;object-fit:contain}
+  .footer-logo-txt{font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:500;letter-spacing:0.22em;text-transform:uppercase;color:var(--creme2)}
+  .footer-logo-txt span{color:var(--ouro)}
+  .footer-insta{font-size:12px;letter-spacing:0.12em;color:var(--dourado);text-decoration:none}
+  .footer-insta:hover{color:var(--ouro-bri)}
+  .footer-copy{font-size:11px;color:var(--marrom2);margin-top:1.5rem;letter-spacing:0.06em}
+
+  .toast{position:fixed;bottom:2rem;left:50%;transform:translateX(-50%) translateY(80px);background:var(--escuro);color:var(--creme2);padding:10px 28px;border-radius:2px;border:1px solid var(--ouro);font-size:12px;letter-spacing:0.08em;z-index:400;transition:transform 0.3s ease,opacity 0.3s;opacity:0;pointer-events:none;white-space:nowrap}
+  .toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+
+  @media(max-width:600px){header{padding:0 1rem}.hero{padding:3.5rem 1rem 3rem}.filtros{padding:1rem}.catalogo{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo-wrap" id="headerLogoWrap">
+    <!-- preenchido pelo JS com imagem ou texto -->
+  </div>
+  <div class="header-right">
+    <a class="insta-link" href="https://instagram.com/gioacessorios.co" target="_blank">@gioacessorios.co</a>
+    <button class="cart-btn" onclick="abrirCarrinho()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+      Sacola
+      <span class="cart-badge" id="cartBadge">0</span>
+    </button>
+  </div>
+</header>
+
+<section class="hero">
+  <p class="hero-tag">Coleção exclusiva</p>
+  <h1>Elegância que<br><em>transforma</em></h1>
+  <p>Clean · Elegante · Moderna</p>
+</section>
+
+<div class="filtros" id="filtros"></div>
+<div class="catalogo" id="catalogo"></div>
+
+<footer>
+  <div class="footer-logo-wrap" id="footerLogoWrap"></div>
+  <a class="footer-insta" href="https://instagram.com/gioacessorios.co" target="_blank">@gioacessorios.co</a>
+  <p class="footer-copy">© Gio Acessórios — Todos os direitos reservados</p>
+</footer>
+
+<!-- Drawer -->
+<div class="drawer-overlay" id="drawerOverlay" onclick="fecharCarrinho()"></div>
+<div class="drawer" id="drawer">
+  <div class="drawer-header">
+    <span class="drawer-titulo">Minha Sacola</span>
+    <button class="fechar-btn" onclick="fecharCarrinho()">✕</button>
+  </div>
+  <div class="drawer-itens" id="drawerItens"></div>
+  <div class="drawer-footer" id="drawerFooter" style="display:none">
+    <div class="total-linha">
+      <span class="total-label">Total</span>
+      <span class="total-valor" id="totalValor">R$ 0,00</span>
+    </div>
+    <button class="finalizar-btn" id="finalizarBtn" onclick="finalizarCompra()">Finalizar compra</button>
+    <p class="loading-txt" id="loadingTxt" style="display:none">Gerando link de pagamento...</p>
+  </div>
+</div>
+
+<!-- Modal variação -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal" style="position:relative">
+    <button class="modal-fechar" onclick="fecharModal()">✕</button>
+    <div class="modal-nome" id="modalNome"></div>
+    <div class="modal-preco" id="modalPreco"></div>
+    <div id="modalVariacoes"></div>
+    <button class="modal-add-btn" onclick="adicionarDoModal()">Adicionar à sacola</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ── CONFIG ────────────────────────────────────────────────────────────────────
+const CONFIG = {
+  infiniteTag: localStorage.getItem('cfg_handle') || 'gioacessorios',
+  webhookUrl:  localStorage.getItem('cfg_webhook') || '',
+  successUrl:  window.location.origin + '/sucesso.html',
+  failureUrl:  window.location.origin + '/?erro=1',
+};
+
+// ── LOGO (configurável via admin) ─────────────────────────────────────────────
+function renderLogos() {
+  const url = localStorage.getItem('gio_logo_url') || '';
+  const header = document.getElementById('headerLogoWrap');
+  const footer = document.getElementById('footerLogoWrap');
+  if (url) {
+    header.innerHTML = '<img class="logo-img" src="'+url+'" alt="Gio Acessórios" onerror="this.style.display=\'none\';document.getElementById(\'headerLogoWrap\').innerHTML=logoTxt()">';
+    footer.innerHTML = '<img class="footer-logo-img" src="'+url+'" alt="Gio Acessórios" onerror="this.style.display=\'none\';document.getElementById(\'footerLogoWrap\').innerHTML=footerLogoTxt()">';
+  } else {
+    header.innerHTML = logoTxt();
+    footer.innerHTML = footerLogoTxt();
+  }
+}
+function logoTxt()       { return '<div class="logo-text">GIO <span>ACESSÓRIOS</span></div>'; }
+function footerLogoTxt() { return '<div class="footer-logo-txt">GIO <span>ACESSÓRIOS</span></div>'; }
+
+// ── PRODUTOS ──────────────────────────────────────────────────────────────────
+function getProdutos() {
+  const s = localStorage.getItem('gio_produtos');
+  if (s) return JSON.parse(s);
+  return [
+    {id:1,nome:"Anel Solitário Gold",sub:"Banho de ouro 18k",preco:89,emoji:"💍",cat:"Anéis",variacoes:["14","16","18","20"],estoque:10,foto:""},
+    {id:2,nome:"Brinco Argola Slim",sub:"Dourado / Prata",preco:59,emoji:"✨",cat:"Brincos",variacoes:["Dourado","Prata"],estoque:15,foto:""},
+    {id:3,nome:"Colar Corrente Fina",sub:"Banho de ouro 18k",preco:119,emoji:"📿",cat:"Colares",variacoes:["40cm","45cm","50cm"],estoque:8,foto:""},
+    {id:4,nome:"Pulseira Delicada",sub:"Zircônia cristal",preco:79,emoji:"💛",cat:"Pulseiras",variacoes:["P/M","G"],estoque:0,foto:""},
+    {id:5,nome:"Tornozeleira Gold",sub:"Regulável",preco:65,emoji:"⭐",cat:"Tornozeleiras",variacoes:[],estoque:12,foto:""},
+    {id:6,nome:"Conjunto Minimalista",sub:"Brinco + Colar",preco:159,emoji:"🌟",cat:"Conjuntos",variacoes:["Dourado","Rosé"],estoque:5,foto:""},
+  ];
+}
+
+let produtos = getProdutos(), carrinho = {}, catAtual = 'todos';
+let modalProduto = null, modalVarSel = null;
+
+function renderFiltros() {
+  const visiveis = produtos.filter(p=>p.visivel!==false);
+  const cats = ['todos', ...new Set(visiveis.map(p => p.cat))];
+  document.getElementById('filtros').innerHTML = cats.map(c =>
+    '<button class="filtro-btn '+(c===catAtual?'ativo':'')+'" onclick="filtrar(this,\''+c+'\')">'+(c==='todos'?'Todos':c)+'</button>'
+  ).join('');
+}
+function renderCatalogo() {
+  const lista = (catAtual==='todos' ? produtos : produtos.filter(p=>p.cat===catAtual)).filter(p=>p.visivel!==false);
+  document.getElementById('catalogo').innerHTML = lista.map((p,i)=>
+    '<div class="produto-card" style="animation-delay:'+(i*0.05)+'s"'+(todosEsgotados(p)?'':' onclick="abrirModal('+p.id+')"')+'>' +
+    '<div class="produto-img">'+(p.foto?'<img src="'+p.foto+'" alt="'+p.nome+'" loading="lazy">':'<span class="produto-emoji">'+p.emoji+'</span>')+(todosEsgotados(p)?'<div class="esgotado-overlay"><span class="esgotado-tag">Esgotado</span></div>':'')+'</div>'+
+    '<div class="produto-info"><div class="produto-nome">'+p.nome+'</div><div class="produto-sub">'+p.sub+'</div>'+
+    '<div class="produto-footer"><span class="produto-preco">R$ '+p.preco.toFixed(2).replace('.',',')+'</span>'+
+    (p.estoque>0&&p.estoque<=3?'<span class="produto-estoque">Últimas '+p.estoque+'</span>':'')+
+    (todosEsgotados(p)?'':'<button class="add-btn" onclick="event.stopPropagation();abrirModal('+p.id+')" aria-label="Adicionar">+</button>')+
+    '</div></div></div>'
+  ).join('');
+}
+function filtrar(el, cat) { catAtual=cat; renderFiltros(); renderCatalogo(); }
+
+function abrirModal(id) {
+  modalProduto=produtos.find(p=>p.id===id); modalVarSel=null;
+  document.getElementById('modalNome').textContent=modalProduto.nome;
+  document.getElementById('modalPreco').textContent='R$ '+modalProduto.preco.toFixed(2).replace('.',',');
+  const div=document.getElementById('modalVariacoes');
+  if(modalProduto.variacoes&&modalProduto.variacoes.length>0){
+    const ev = modalProduto.estoqueVars||{};
+    const btns = modalProduto.variacoes.map(v=>{
+      // se estoqueVars existe para essa variação, usa; se não existe (produto antigo), assume disponível
+      const temEstoqueVar = Object.keys(ev).length > 0;
+      const qtd = temEstoqueVar ? (ev[v]||0) : 99;
+      const esg = qtd === 0;
+      if(esg){
+        return '<button class="var-btn esgotada" disabled title="Esgotado">'+v+'</button>';
+      }
+      return '<button class="var-btn" onclick="selVar(this,\''+v+'\')">'+v+'</button>';
+    }).join('');
+    div.innerHTML='<p class="var-label">Variação</p><div class="var-opcoes">'+btns+'</div>';
+  } else { div.innerHTML=''; modalVarSel='Único'; }
+  document.getElementById('modalOverlay').classList.add('aberto');
+}
+function fecharModal(){document.getElementById('modalOverlay').classList.remove('aberto')}
+function selVar(el,v){document.querySelectorAll('.var-btn').forEach(b=>b.classList.remove('sel'));el.classList.add('sel');modalVarSel=v}
+function adicionarDoModal(){
+  if(modalProduto.variacoes.length>0&&!modalVarSel){mostrarToast('Selecione uma variação');return}
+  const key=modalProduto.id+'_'+(modalVarSel||'');
+  if(!carrinho[key]) carrinho[key]={produto:modalProduto,variacao:modalVarSel,qty:0};
+  carrinho[key].qty++; fecharModal(); atualizarBadge(); mostrarToast(modalProduto.nome+' adicionado ✓');
+}
+
+function todosEsgotados(p){
+  if(!p.estoqueVars||Object.keys(p.estoqueVars).length===0) return p.estoque===0;
+  // se tem estoqueVars, só bloqueia se TODAS as variações forem 0
+  return Object.values(p.estoqueVars).every(q=>q===0);
+}
+function abrirCarrinho(){renderCarrinho();document.getElementById('drawerOverlay').classList.add('aberto');document.getElementById('drawer').classList.add('aberto')}
+function fecharCarrinho(){document.getElementById('drawerOverlay').classList.remove('aberto');document.getElementById('drawer').classList.remove('aberto')}
+function renderCarrinho(){
+  const itens=Object.entries(carrinho).filter(([,v])=>v.qty>0);
+  const div=document.getElementById('drawerItens'),footer=document.getElementById('drawerFooter');
+  if(!itens.length){div.innerHTML='<div class="carrinho-vazio"><span class="carrinho-vazio-icon">✨</span>Sua sacola está vazia</div>';footer.style.display='none';return}
+  let total=0;
+  div.innerHTML=itens.map(([key,item])=>{
+    total+=item.produto.preco*item.qty;
+    return '<div class="item-carrinho"><div class="item-thumb">'+(item.produto.foto?'<img src="'+item.produto.foto+'">':item.produto.emoji)+'</div>'+
+    '<div class="item-detalhe"><div class="item-nome">'+item.produto.nome+'</div><div class="item-var">'+(item.variacao&&item.variacao!=='Único'?item.variacao:'')+'</div>'+
+    '<div class="item-controles"><button class="qty-btn" onclick="mudarQty(\''+key+'\',-1)">−</button><span class="qty-num">'+item.qty+'</span><button class="qty-btn" onclick="mudarQty(\''+key+'\',1)">+</button></div></div>'+
+    '<div class="item-preco">R$ '+(item.produto.preco*item.qty).toFixed(2).replace('.',',')+'</div></div>';
+  }).join('');
+  document.getElementById('totalValor').textContent='R$ '+total.toFixed(2).replace('.',',');
+  footer.style.display='block';
+}
+function mudarQty(key,d){carrinho[key].qty+=d;if(carrinho[key].qty<=0)delete carrinho[key];atualizarBadge();renderCarrinho()}
+function atualizarBadge(){document.getElementById('cartBadge').textContent=Object.values(carrinho).reduce((a,v)=>a+v.qty,0)}
+
+async function finalizarCompra(){
+  const itens=Object.values(carrinho).filter(v=>v.qty>0);
+  if(!itens.length) return;
+  const btn=document.getElementById('finalizarBtn'),loading=document.getElementById('loadingTxt');
+  btn.disabled=true; loading.style.display='block';
+  const payload={
+    handle:CONFIG.infiniteTag,
+    items:itens.map(item=>({name:item.produto.nome+(item.variacao&&item.variacao!=='Único'?' - '+item.variacao:''),price_cents:Math.round(item.produto.preco*100),quantity:item.qty})),
+    success_url:CONFIG.successUrl,failure_url:CONFIG.failureUrl,
+    ...(CONFIG.webhookUrl?{webhook_url:CONFIG.webhookUrl}:{})
+  };
+  try{
+    const res=await fetch('/api/checkout',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+    const data=await res.json();
+    const link = data.checkout_url || data.url;
+    if(link){window.location.href=link}else throw new Error(data.message||'Erro ao gerar link de pagamento');
+  }catch(err){alert('Erro no pagamento. Tente novamente.\n'+err.message);btn.disabled=false;loading.style.display='none'}
+}
+
+function mostrarToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2200)}
+
+// ── INIT ──────────────────────────────────────────────────────────────────────
+renderLogos(); renderFiltros(); renderCatalogo();
+window.addEventListener('storage',e=>{
+  if(e.key==='gio_produtos'){produtos=getProdutos();renderFiltros();renderCatalogo()}
+  if(e.key==='gio_logo_url'){renderLogos()}
+});
+</script>
+</body>
+</html>
