@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin — Gio Acessórios</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --marrom:#887363;--creme:#f0e5d8;--escuro:#392012;--cafe:#4e3220;
+    --dourado:#c8ae8b;--ouro:#b8975a;--bg:#f7f2eb;--borda:rgba(57,32,18,0.13);
+    --branco:#fdfaf6;--verde:#2a6b3f;--verde-bg:#eaf3ee;
+    --vermelho:#8b2e2e;--vermelho-bg:#f9eaea;--creme2:#f0e2c7;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--cafe);font-family:'DM Sans',sans-serif;font-weight:300;min-height:100vh}
+
+  /* LOGIN */
+  .login-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center}
+  .login-box{background:var(--branco);border:1px solid var(--borda);border-radius:4px;padding:2.5rem;width:360px;text-align:center}
+  .login-logo-txt{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:600;letter-spacing:0.2em;text-transform:uppercase;color:var(--cafe);margin-bottom:4px}
+  .login-logo-txt span{color:var(--ouro)}
+  .login-sub{font-size:11px;color:var(--marrom);margin-bottom:2rem;letter-spacing:0.12em;text-transform:uppercase}
+  .login-input{width:100%;padding:11px 14px;border:1px solid var(--borda);border-radius:2px;background:var(--creme);font-family:'DM Sans',sans-serif;font-size:14px;color:var(--cafe);margin-bottom:12px;outline:none;transition:border-color 0.2s}
+  .login-input:focus{border-color:var(--ouro)}
+  .login-btn{width:100%;padding:12px;background:var(--escuro);color:var(--creme);border:none;border-radius:2px;font-family:'DM Sans',sans-serif;font-size:11px;letter-spacing:0.14em;text-transform:uppercase;cursor:pointer;transition:background 0.2s}
+  .login-btn:hover{background:var(--cafe)}
+  .login-erro{font-size:12px;color:var(--vermelho);margin-top:8px}
+
+  /* ADMIN */
+  .admin{display:none}
+  .admin.logado{display:block}
+  .admin-header{position:sticky;top:0;z-index:50;background:var(--escuro);padding:0 2rem;height:60px;display:flex;align-items:center;justify-content:space-between}
+  .admin-logo{font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:500;letter-spacing:0.2em;text-transform:uppercase;color:var(--creme2)}
+  .admin-logo span{color:var(--ouro)}
+  .header-actions{display:flex;gap:10px;align-items:center}
+  .btn-header{padding:7px 16px;border-radius:2px;font-size:11px;font-family:'DM Sans',sans-serif;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer;border:1px solid rgba(200,174,139,0.4);color:var(--dourado);background:none;transition:all 0.2s;text-decoration:none;display:inline-flex;align-items:center;gap:6px}
+  .btn-header:hover{background:rgba(200,174,139,0.15)}
+
+  .admin-content{max-width:1080px;margin:0 auto;padding:2rem}
+  .section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem}
+  .section-title{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:500;color:var(--cafe)}
+  .btn-novo{padding:9px 22px;background:var(--escuro);color:var(--creme);border:none;border-radius:2px;font-family:'DM Sans',sans-serif;font-size:11px;letter-spacing:0.12em;text-transform:uppercase;cursor:pointer;transition:background 0.2s}
+  .btn-novo:hover{background:var(--cafe)}
+
+  /* STATS */
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:2rem}
+  .stat-card{background:var(--branco);border:1px solid var(--borda);border-radius:4px;padding:1.25rem}
+  .stat-label{font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:var(--marrom);margin-bottom:6px}
+  .stat-val{font-family:'Cormorant Garamond',serif;font-size:30px;font-weight:500;color:var(--cafe)}
+  .stat-sub{font-size:11px;color:var(--marrom);margin-top:2px}
+
+  /* CONFIG */
+  .config-strip{background:var(--branco);border:1px solid var(--borda);border-radius:4px;padding:1.25rem 1.5rem;margin-bottom:2rem;display:flex;align-items:flex-end;gap:1.5rem;flex-wrap:wrap}
+  .config-label{font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:var(--marrom);margin-bottom:5px}
+  .config-input{padding:9px 12px;border:1px solid var(--borda);border-radius:2px;background:var(--creme);font-family:'DM Sans',sans-serif;font-size:13px;color:var(--cafe);outline:none;width:220px;transition:border-color 0.2s}
+  .config-input:focus{border-color:var(--ouro)}
+  .config-save{padding:10px 20px;background:var(--ouro);color:var(--escuro);border:none;border-radius:2px;font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;letter-spacing:0.1em;text-transform:uppercase;transition:background 0.2s}
+  .config-save:hover{background:var(--escuro);color:var(--creme)}
+
+  /* TABELA */
+  .tabela-wrap{background:var(--branco);border:1px solid var(--borda);border-radius:4px;overflow:hidden}
+  table{width:100%;border-collapse:collapse}
+  th{background:var(--creme);font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:var(--marrom);font-weight:400;padding:12px 16px;text-align:left;border-bottom:1px solid var(--borda)}
+  td{padding:12px 16px;font-size:14px;border-bottom:1px solid var(--borda);vertical-align:middle}
+  tr:last-child td{border-bottom:none}
+  tr:hover td{background:var(--bg)}
+  .td-thumb{width:44px;height:54px;border-radius:2px;object-fit:cover;background:var(--creme2);display:flex;align-items:center;justify-content:center;font-size:20px;overflow:hidden;flex-shrink:0}
+  .td-thumb img{width:100%;height:100%;object-fit:cover}
+  .td-nome{font-weight:400;color:var(--cafe)}
+  .td-sub{font-size:11px;color:var(--marrom);margin-top:2px}
+  .td-preco{font-family:'Cormorant Garamond',serif;font-size:15px;color:var(--ouro)}
+  .est-badge{display:inline-block;padding:3px 10px;border-radius:2px;font-size:11px;font-weight:400;letter-spacing:0.06em}
+  .est-ok{background:var(--verde-bg);color:var(--verde)}
+  .est-baixo{background:#fef3e2;color:#8a5000}
+  .est-zero{background:var(--vermelho-bg);color:var(--vermelho)}
+  .td-acoes{display:flex;gap:8px}
+  .btn-acao{padding:5px 12px;border-radius:2px;font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;border:1px solid var(--borda);background:none;color:var(--cafe);transition:all 0.15s;letter-spacing:0.04em}
+  .btn-acao:hover{background:var(--creme)}
+  .btn-acao.del{color:var(--vermelho);border-color:var(--vermelho-bg)}
+  .btn-acao.del:hover{background:var(--vermelho-bg)}
+
+  /* MODAL */
+  .modal-bg{display:none;position:fixed;inset:0;background:rgba(57,32,18,0.55);z-index:200;align-items:center;justify-content:center;padding:1rem}
+  .modal-bg.aberto{display:flex}
+  .modal-card{background:var(--branco);border-radius:4px;padding:2rem;width:580px;max-width:100%;max-height:92vh;overflow-y:auto;animation:popIn 0.22s ease}
+  @keyframes popIn{from{opacity:0;transform:scale(0.96)}to{opacity:1;transform:scale(1)}}
+  .modal-titulo{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:500;margin-bottom:1.5rem;color:var(--cafe)}
+  .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+  .form-group{display:flex;flex-direction:column;gap:5px}
+  .form-group.full{grid-column:1/-1}
+  .form-label{font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:var(--marrom)}
+  .form-input{padding:9px 12px;border:1px solid var(--borda);border-radius:2px;background:var(--creme);font-family:'DM Sans',sans-serif;font-size:14px;color:var(--cafe);outline:none;transition:border-color 0.2s}
+  .form-input:focus{border-color:var(--ouro)}
+
+  /* UPLOAD DE FOTO */
+  .foto-area{
+    border:2px dashed var(--borda);border-radius:4px;
+    background:var(--creme);cursor:pointer;
+    transition:border-color 0.2s,background 0.2s;
+    position:relative;overflow:hidden;
+  }
+  .foto-area:hover{border-color:var(--ouro);background:var(--creme2)}
+  .foto-area.tem-foto{border-style:solid;border-color:var(--ouro)}
+  .foto-placeholder{
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    padding:1.5rem;gap:8px;color:var(--marrom);
+  }
+  .foto-placeholder svg{opacity:0.5}
+  .foto-placeholder span{font-size:12px;letter-spacing:0.06em;text-align:center;line-height:1.5}
+  .foto-preview{
+    width:100%;aspect-ratio:3/2;object-fit:cover;display:block;
+  }
+  .foto-input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+  .foto-remover{
+    position:absolute;top:8px;right:8px;
+    background:var(--escuro);color:var(--creme);
+    border:none;border-radius:50%;width:26px;height:26px;
+    font-size:14px;cursor:pointer;display:none;
+    align-items:center;justify-content:center;
+    z-index:2;
+  }
+  .foto-area.tem-foto .foto-remover{display:flex}
+
+  .modal-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:1.5rem}
+  .btn-cancelar{padding:10px 22px;border:1px solid var(--borda);border-radius:2px;background:none;cursor:pointer;font-size:11px;color:var(--cafe);font-family:'DM Sans',sans-serif;letter-spacing:0.08em;text-transform:uppercase}
+  .btn-salvar{padding:10px 22px;background:var(--escuro);color:var(--creme);border:none;border-radius:2px;cursor:pointer;font-size:11px;font-family:'DM Sans',sans-serif;letter-spacing:0.1em;text-transform:uppercase;transition:background 0.2s}
+  .btn-salvar:hover{background:var(--cafe)}
+
+  /* TOAST */
+  .toast-area{position:fixed;bottom:1.5rem;right:1.5rem;z-index:400}
+  .toast-item{background:var(--escuro);color:var(--creme);padding:10px 20px;border-radius:2px;font-size:12px;margin-top:8px;letter-spacing:0.06em;border-left:3px solid var(--ouro);animation:fadeIn 0.2s ease}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+  @media(max-width:600px){
+    .admin-content{padding:1rem}
+    .form-grid{grid-template-columns:1fr}
+    th,td{padding:10px 12px}
+    .config-strip{flex-direction:column}
+    .config-input{width:100%}
+  }
+</style>
+</head>
+<body>
+
+<div class="login-wrap" id="loginWrap">
+  <div class="login-box">
+    <div class="login-logo-txt">GIO <span>ACESSÓRIOS</span></div>
+    <p class="login-sub">Painel administrativo</p>
+    <input class="login-input" type="password" id="senhaInput" placeholder="Senha de acesso"
+           onkeydown="if(event.key==='Enter')fazerLogin()">
+    <button class="login-btn" onclick="fazerLogin()">Entrar</button>
+    <p class="login-erro" id="loginErro" style="display:none">Senha incorreta</p>
+  </div>
+</div>
+
+<div class="admin" id="adminWrap">
+  <header class="admin-header">
+    <div class="admin-logo">GIO <span>ACESSÓRIOS</span> — admin</div>
+    <div class="header-actions">
+      <a href="index.html" target="_blank" class="btn-header">Ver loja ↗</a>
+      <button class="btn-header" onclick="sair()">Sair</button>
+    </div>
+  </header>
+
+  <div class="admin-content">
+    <div class="stats" id="statsArea"></div>
+
+    <!-- CONFIG -->
+    <div class="config-strip">
+      <div>
+        <div class="config-label">InfiniteTag da InfinityPay</div>
+        <input class="config-input" type="text" id="cfgHandle" placeholder="seu_handle">
+      </div>
+      <div>
+        <div class="config-label">URL da logo (PNG transparente)</div>
+        <input class="config-input" type="text" id="cfgLogo" placeholder="https://..." style="width:260px">
+      </div>
+      <div>
+        <div class="config-label">Nova senha do painel</div>
+        <input class="config-input" type="password" id="cfgSenha" placeholder="deixe vazio para manter">
+      </div>
+      <button class="config-save" onclick="salvarConfig()">Salvar</button>
+    </div>
+
+    <!-- PRODUTOS -->
+    <div class="section-header">
+      <h2 class="section-title">Produtos</h2>
+      <button class="btn-novo" onclick="abrirModalNovo()">+ Novo produto</button>
+    </div>
+    <div class="tabela-wrap">
+      <table>
+        <thead>
+          <tr><th>Produto</th><th>Categoria</th><th>Preço</th><th>Estoque</th><th>Ações</th></tr>
+        </thead>
+        <tbody id="tabelaBody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL PRODUTO -->
+<div class="modal-bg" id="modalBg">
+  <div class="modal-card">
+    <h3 class="modal-titulo" id="modalTitulo">Novo produto</h3>
+    <input type="hidden" id="editId">
+    <div class="form-grid">
+
+      <!-- FOTO UPLOAD -->
+      <div class="form-group full">
+        <label class="form-label">Foto do produto</label>
+        <div class="foto-area" id="fotoArea" onclick="document.getElementById('fotoInput').click()">
+          <div class="foto-placeholder" id="fotoPlaceholder">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+            <span>Clique ou arraste uma foto aqui<br><small style="opacity:0.7">JPG, PNG ou WEBP — máx. 5MB</small></span>
+          </div>
+          <img id="fotoPreview" class="foto-preview" style="display:none" alt="Preview">
+          <input type="file" id="fotoInput" class="foto-input" accept="image/*" onchange="carregarFoto(event)" onclick="event.stopPropagation()">
+          <button class="foto-remover" id="fotoRemover" onclick="removerFoto(event)" title="Remover foto">✕</button>
+        </div>
+        <!-- Campo URL alternativo -->
+        <div style="margin-top:8px;display:flex;align-items:center;gap:8px">
+          <span style="font-size:11px;color:var(--marrom);letter-spacing:0.06em">ou cole uma URL:</span>
+          <input class="form-input" type="text" id="fFotoUrl" placeholder="https://..." style="flex:1;font-size:12px;padding:7px 10px" oninput="atualizarFotoUrl(this.value)">
+        </div>
+      </div>
+
+      <div class="form-group full">
+        <label class="form-label">Nome</label>
+        <input class="form-input" type="text" id="fNome" placeholder="Ex: Brinco Argola Gold">
+      </div>
+      <div class="form-group full">
+        <label class="form-label">Descrição curta</label>
+        <input class="form-input" type="text" id="fSub" placeholder="Ex: Banho de ouro 18k">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Preço (R$)</label>
+        <input class="form-input" type="number" id="fPreco" placeholder="89.90" step="0.01" min="0">
+      </div>
+      <div class="form-group" id="estoqueGeralWrap">
+        <label class="form-label">Estoque (qtd)</label>
+        <input class="form-input" type="number" id="fEstoque" placeholder="10" min="0">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Categoria</label>
+        <input class="form-input" type="text" id="fCat" placeholder="Ex: Brincos, Anéis, Colares...">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Emoji (ícone de fallback)</label>
+        <input class="form-input" type="text" id="fEmoji" placeholder="💍" maxlength="4">
+      </div>
+      <div class="form-group full">
+        <label class="form-label">Variações (separadas por vírgula)</label>
+        <input class="form-input" type="text" id="fVars" placeholder="P, M, G, GG   ou   Dourado, Prata   (vazio = sem variação)" oninput="atualizarCamposEstoque()">
+      </div>
+      <div class="form-group full" id="estoqueVarsWrap" style="display:none">
+        <label class="form-label">Estoque por variação</label>
+        <div id="estoqueVarsCampos" style="display:flex;flex-wrap:wrap;gap:10px;margin-top:4px"></div>
+        <small style="font-size:11px;color:var(--marrom);margin-top:6px;display:block">Quantidade disponível de cada variação</small>
+      </div>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn-cancelar" onclick="fecharModal()">Cancelar</button>
+      <button class="btn-salvar" onclick="salvarProduto()">Salvar produto</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast-area" id="toastArea"></div>
+
+<script>
+// ── AUTH ──────────────────────────────────────────────────────────────────────
+const SENHA_PADRAO = 'gio2024';
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwqHoJ0aGhTs25JT6Nwi1VeHRWVSY2nIRiFmbx0-0m3f8Ng3P-yKe3ju6mNirp_qkBYwg/exec';
+function getSenha(){ return localStorage.getItem('gio_admin_senha') || SENHA_PADRAO; }
+function fazerLogin(){
+  if(document.getElementById('senhaInput').value === getSenha()){
+    sessionStorage.setItem('gio_admin_ok','1');
+    document.getElementById('loginWrap').style.display='none';
+    document.getElementById('adminWrap').classList.add('logado');
+    iniciarAdmin();
+  } else {
+    document.getElementById('loginErro').style.display='block';
+  }
+}
+function sair(){ sessionStorage.removeItem('gio_admin_ok'); location.reload(); }
+
+// ── PRODUTOS ──────────────────────────────────────────────────────────────────
+function getProdutos(){
+  const s = localStorage.getItem('gio_produtos');
+  if(s) return JSON.parse(s);
+  return [];
+}
+
+async function carregarDaPlanilha(){
+  try {
+    const res = await fetch('https://docs.google.com/spreadsheets/d/18675_DYsO8GRrMKLgEchR3LbxfxzSkI04PKXEWY7sVo/export?format=csv&t=' + Date.now());
+    const text = await res.text();
+    const allRows = text.split('\n').filter(r=>r.trim()).map(r=>{
+      const cols=[]; let cur='',inQ=false;
+      for(let i=0;i<r.length;i++){
+        if(r[i]==='"'){inQ=!inQ;}
+        else if(r[i]===','&&!inQ){cols.push(cur);cur='';}
+        else{cur+=r[i];}
+      }
+      cols.push(cur);
+      return cols.map(c=>c.trim());
+    });
+    const rows = allRows;
+    const headers = rows[0] || [];
+    const get = (row, label) => { const i = headers.indexOf(label); return i>=0?row[i]:''; };
+    const ps = rows.slice(1).map((row,i) => {
+      const varsStr = String(get(row,'variacoes')||'');
+      const varLista = varsStr?varsStr.split(',').map(v=>v.trim()).filter(Boolean):[];
+      const evStr = String(get(row,'estoqueVars')||'');
+      const estoqueVars = {};
+      if(evStr) evStr.split(',').forEach(pair=>{
+        const parts=pair.split(':');
+        if(parts.length===2) estoqueVars[parts[0].trim()]=parseInt(parts[1])||0;
+      });
+      return {
+        id: get(row,'id')||(i+1), nome:String(get(row,'nome')||''),
+        sub:String(get(row,'sub')||''), preco:parseFloat(get(row,'preco'))||0,
+        estoque:parseInt(get(row,'estoque'))||0, cat:String(get(row,'cat')||'Geral'),
+        emoji:String(get(row,'emoji')||'💎'), variacoes:varLista, estoqueVars,
+        foto:String(get(row,'foto')||''), visivel:String(get(row,'visivel'))!=='false',
+      };
+    }).filter(p=>p.nome);
+    if(ps.length > 0){
+      localStorage.setItem('gio_produtos', JSON.stringify(ps));
+    }
+  } catch(e){ console.error('Erro ao carregar da planilha:', e); }
+  renderStats(); renderTabela();
+}
+
+
+
+function salvarProdutos(p){
+  localStorage.setItem('gio_produtos', JSON.stringify(p));
+  sincronizarPlanilha(p);
+}
+
+async function sincronizarPlanilha(produtos){
+  try {
+    const data = encodeURIComponent(JSON.stringify(produtos));
+    // no-cors permite chamar Apps Script sem problemas de CORS
+    await fetch(SCRIPT_URL + '?action=save&data=' + data, {mode:'no-cors'});
+  } catch(e) {
+    console.error('Erro ao sincronizar planilha:', e);
+  }
+}
+
+// ── STATS ─────────────────────────────────────────────────────────────────────
+function renderStats(){
+  const ps=getProdutos();
+  document.getElementById('statsArea').innerHTML=[
+    ['Total',ps.length,''],
+    ['Disponíveis',ps.filter(p=>p.estoque>0).length,'color:var(--verde)'],
+    ['Estoque baixo',ps.filter(p=>p.estoque>0&&p.estoque<=3).length,'color:#8a5000','≤ 3 un.'],
+    ['Esgotados',ps.filter(p=>p.estoque===0).length,'color:var(--vermelho)'],
+  ].map(([l,v,s,sub])=>
+    '<div class="stat-card"><div class="stat-label">'+l+'</div><div class="stat-val" style="'+s+'">'+v+'</div>'+(sub?'<div class="stat-sub">'+sub+'</div>':'')+'</div>'
+  ).join('');
+}
+
+// ── TABELA ────────────────────────────────────────────────────────────────────
+function renderTabela(){
+  const ps=getProdutos();
+  const tbody=document.getElementById('tabelaBody');
+  if(!ps.length){tbody.innerHTML='<tr><td colspan="5" style="text-align:center;color:var(--marrom);padding:2rem">Nenhum produto cadastrado</td></tr>';return}
+  tbody.innerHTML=ps.map(p=>{
+    const cls=p.estoque===0?'est-zero':p.estoque<=3?'est-baixo':'est-ok';
+    let txt;
+    if(p.estoqueVars && Object.keys(p.estoqueVars).length > 0){
+      txt = Object.entries(p.estoqueVars).map(([v,q])=>v+': '+q).join(' · ');
+      if(!txt) txt = 'Esgotado';
+    } else {
+      txt = p.estoque===0?'Esgotado':p.estoque+' un.';
+    }
+    const thumb=p.foto
+      ?'<div class="td-thumb"><img src="'+p.foto+'" alt="'+p.nome+'"></div>'
+      :'<div class="td-thumb" style="font-size:22px">'+p.emoji+'</div>';
+    return '<tr><td><div style="display:flex;align-items:center;gap:12px">'+thumb+
+      '<div><div class="td-nome">'+p.nome+'</div><div class="td-sub">'+p.sub+'</div></div></div></td>'+
+      '<td>'+p.cat+'</td>'+
+      '<td class="td-preco">R$ '+p.preco.toFixed(2).replace('.',',')+'</td>'+
+      '<td><span class="est-badge '+cls+'">'+txt+'</span></td>'+
+      '<td><div class="td-acoes">'+
+        '<button class="btn-acao" onclick="editarProduto('+p.id+')">Editar</button>'+
+        '<button class="btn-acao '+(p.visivel===false?'':'ativo')+'" onclick="toggleVisivel('+p.id+')" title="'+(p.visivel===false?'Oculto no catálogo':'Visível no catálogo')+'" style="'+(p.visivel===false?'color:var(--marrom)':'')+'">'+(p.visivel===false?'👁 Oculto':'👁 Visível')+'</button>'+
+        '<button class="btn-acao del" onclick="deletarProduto('+p.id+')">Remover</button>'+
+      '</div></td></tr>';
+  }).join('');
+}
+
+// ── FOTO UPLOAD ───────────────────────────────────────────────────────────────
+let fotoBase64 = ''; // guarda a foto atual em base64
+
+function carregarFoto(event){
+  const file = event.target.files[0];
+  if(!file) return;
+  if(file.size > 5 * 1024 * 1024){ toast('Foto muito grande (máx. 5MB)'); return; }
+
+  const reader = new FileReader();
+  reader.onload = function(e){
+    fotoBase64 = e.target.result; // data:image/...;base64,...
+    document.getElementById('fotoPreview').src = fotoBase64;
+    document.getElementById('fotoPreview').style.display = 'block';
+    document.getElementById('fotoPlaceholder').style.display = 'none';
+    document.getElementById('fotoArea').classList.add('tem-foto');
+    document.getElementById('fFotoUrl').value = '';
+  };
+  reader.readAsDataURL(file);
+}
+
+function atualizarFotoUrl(url){
+  if(!url){ return; }
+  fotoBase64 = url;
+  document.getElementById('fotoPreview').src = url;
+  document.getElementById('fotoPreview').style.display = 'block';
+  document.getElementById('fotoPlaceholder').style.display = 'none';
+  document.getElementById('fotoArea').classList.add('tem-foto');
+}
+
+function removerFoto(e){
+  e.stopPropagation();
+  fotoBase64 = '';
+  document.getElementById('fotoPreview').src = '';
+  document.getElementById('fotoPreview').style.display = 'none';
+  document.getElementById('fotoPlaceholder').style.display = 'flex';
+  document.getElementById('fotoArea').classList.remove('tem-foto');
+  document.getElementById('fotoInput').value = '';
+  document.getElementById('fFotoUrl').value = '';
+}
+
+function resetFotoArea(){
+  fotoBase64 = '';
+  document.getElementById('fotoPreview').src='';
+  document.getElementById('fotoPreview').style.display='none';
+  document.getElementById('fotoPlaceholder').style.display='flex';
+  document.getElementById('fotoArea').classList.remove('tem-foto');
+  document.getElementById('fotoInput').value='';
+  document.getElementById('fFotoUrl').value='';
+}
+
+// ── MODAL ─────────────────────────────────────────────────────────────────────
+function abrirModalNovo(){
+  document.getElementById('modalTitulo').textContent='Novo produto';
+  document.getElementById('editId').value='';
+  ['fNome','fSub','fPreco','fEstoque','fCat','fEmoji','fVars'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('estoqueVarsWrap').style.display='none';
+  document.getElementById('estoqueGeralWrap').style.display='block';
+  document.getElementById('estoqueVarsCampos').innerHTML='';
+  resetFotoArea();
+  document.getElementById('modalBg').classList.add('aberto');
+}
+
+function editarProduto(id){
+  const p=getProdutos().find(x=>x.id===id);
+  document.getElementById('modalTitulo').textContent='Editar produto';
+  document.getElementById('editId').value=id;
+  document.getElementById('fNome').value=p.nome;
+  document.getElementById('fSub').value=p.sub;
+  document.getElementById('fPreco').value=p.preco;
+  document.getElementById('fEstoque').value=p.estoque;
+  document.getElementById('fCat').value=p.cat;
+  document.getElementById('fEmoji').value=p.emoji;
+  document.getElementById('fVars').value=(p.variacoes||[]).join(', ');
+  // trigger stock fields render
+  atualizarCamposEstoque();
+  // fill per-variation stock if exists
+  if(p.estoqueVars && Object.keys(p.estoqueVars).length > 0){
+    document.getElementById('estoqueVarsCampos').querySelectorAll('input').forEach(inp=>{
+      if(p.estoqueVars[inp.dataset.var] !== undefined) inp.value = p.estoqueVars[inp.dataset.var];
+    });
+  }
+  // carregar foto existente
+  resetFotoArea();
+  if(p.foto){
+    fotoBase64 = p.foto;
+    document.getElementById('fotoPreview').src=p.foto;
+    document.getElementById('fotoPreview').style.display='block';
+    document.getElementById('fotoPlaceholder').style.display='none';
+    document.getElementById('fotoArea').classList.add('tem-foto');
+    // se for URL (não base64), mostra no campo URL
+    if(!p.foto.startsWith('data:')){
+      document.getElementById('fFotoUrl').value=p.foto;
+    }
+  }
+  document.getElementById('modalBg').classList.add('aberto');
+}
+
+function fecharModal(){ document.getElementById('modalBg').classList.remove('aberto'); }
+
+function atualizarCamposEstoque(){
+  const vars = document.getElementById('fVars').value.trim();
+  const lista = vars ? vars.split(',').map(v=>v.trim()).filter(Boolean) : [];
+  const wrap = document.getElementById('estoqueVarsWrap');
+  const geral = document.getElementById('estoqueGeralWrap');
+  const campos = document.getElementById('estoqueVarsCampos');
+  if(lista.length > 0){
+    wrap.style.display='block';
+    geral.style.display='none';
+    // preserva valores existentes
+    const existentes = {};
+    campos.querySelectorAll('input').forEach(inp=>{ existentes[inp.dataset.var]=inp.value; });
+    campos.innerHTML = lista.map(v=>
+      '<div style="display:flex;flex-direction:column;gap:4px;min-width:80px">'+
+      '<label style="font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--marrom)">'+v+'</label>'+
+      '<input class="form-input" type="number" min="0" placeholder="0" data-var="'+v+'" value="'+(existentes[v]||'')+'" style="width:80px;padding:7px 10px">'+
+      '</div>'
+    ).join('');
+  } else {
+    wrap.style.display='none';
+    geral.style.display='block';
+  }
+}
+
+function salvarProduto(){
+  const nome=document.getElementById('fNome').value.trim();
+  const preco=parseFloat(document.getElementById('fPreco').value);
+  if(!nome||isNaN(preco)){toast('Preencha nome e preço');return}
+  const ps=getProdutos(), editId=parseInt(document.getElementById('editId').value);
+  const vars=document.getElementById('fVars').value.trim();
+  const varLista = vars?vars.split(',').map(v=>v.trim()).filter(Boolean):[];
+
+  // estoque por variação ou geral
+  let estoque, estoqueVars={};
+  if(varLista.length > 0){
+    document.getElementById('estoqueVarsCampos').querySelectorAll('input').forEach(inp=>{
+      estoqueVars[inp.dataset.var] = parseInt(inp.value)||0;
+    });
+    estoque = Object.values(estoqueVars).reduce((a,b)=>a+b,0);
+  } else {
+    estoque = parseInt(document.getElementById('fEstoque').value)||0;
+  }
+
+  const novoProduto={
+    id:editId||Date.now(), nome, preco, estoque,
+    sub:document.getElementById('fSub').value.trim(),
+    cat:document.getElementById('fCat').value.trim()||'Geral',
+    emoji:document.getElementById('fEmoji').value.trim()||'💎',
+    variacoes:varLista,
+    estoqueVars: varLista.length > 0 ? estoqueVars : {},
+    foto:fotoBase64||'',
+    visivel: true,
+  };
+  if(editId){ps[ps.findIndex(x=>x.id===editId)]=novoProduto;toast('Produto atualizado ✓');}
+  else{ps.push(novoProduto);toast('Produto adicionado ✓');}
+  salvarProdutos(ps); fecharModal(); renderTabela(); renderStats();
+}
+
+function toggleVisivel(id){
+  const ps=getProdutos();
+  const p=ps.find(x=>x.id===id);
+  p.visivel = p.visivel===false ? true : false;
+  salvarProdutos(ps); renderTabela();
+  toast(p.visivel===false ? 'Produto ocultado do catálogo' : 'Produto visível no catálogo');
+}
+
+function deletarProduto(id){
+  if(!confirm('Remover este produto?')) return;
+  salvarProdutos(getProdutos().filter(p=>p.id!==id));
+  renderTabela(); renderStats(); toast('Produto removido');
+}
+
+// ── CONFIG ────────────────────────────────────────────────────────────────────
+function carregarConfig(){
+  document.getElementById('cfgHandle').value=localStorage.getItem('cfg_handle')||'';
+  document.getElementById('cfgLogo').value=localStorage.getItem('gio_logo_url')||'';
+}
+function salvarConfig(){
+  const h=document.getElementById('cfgHandle').value.trim();
+  const l=document.getElementById('cfgLogo').value.trim();
+  const s=document.getElementById('cfgSenha').value;
+  if(h) localStorage.setItem('cfg_handle',h);
+  localStorage.setItem('gio_logo_url',l);
+  if(s){localStorage.setItem('gio_admin_senha',s);document.getElementById('cfgSenha').value='';}
+  toast('Configurações salvas ✓');
+}
+
+// ── TOAST ─────────────────────────────────────────────────────────────────────
+function toast(msg){
+  const area=document.getElementById('toastArea');
+  const el=document.createElement('div');
+  el.className='toast-item';el.textContent=msg;
+  area.appendChild(el);setTimeout(()=>el.remove(),2800);
+}
+
+// ── INIT ──────────────────────────────────────────────────────────────────────
+function iniciarAdmin(){ carregarConfig(); carregarDaPlanilha(); }
+if(sessionStorage.getItem('gio_admin_ok')==='1'){
+  document.getElementById('loginWrap').style.display='none';
+  document.getElementById('adminWrap').classList.add('logado');
+  iniciarAdmin();
+}
+</script>
+</body>
+</html>
